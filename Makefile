@@ -6,7 +6,7 @@
 #    By: gachalif <gachalif@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/13 12:46:16 by gachalif          #+#    #+#              #
-#    Updated: 2024/02/27 08:44:38 by gachalif         ###   ########.fr        #
+#    Updated: 2024/02/27 10:48:28 by gachalif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,10 +33,16 @@ LIBFT_MAKE = make -C libft -s
 LIBFT_CLEAN = make clean -C libft -s
 LIBFT_FCLEAN = make fclean -C libft -s
 
+PRINTF = ft_printf/libftprintf.a
+PRINTF_MAKE = make -C ft_printf -s
+PRINTF_CLEAN = make clean -C ft_printf -s
+PRINTF_FCLEAN = make fclean -C ft_printf -s
+
+
 all:		$(NAME_SERV) $(NAME_CLIENT)
 
-$(NAME_SERV): 	$(LIBFT) $(OBJS_SERV)
-					gcc $(CFLAGS) -o $(NAME_SERV) $(SRCS_SERV) $(LIBFT)
+$(NAME_SERV): 	$(LIBFT) $(PRINTF) $(OBJS_SERV)
+					gcc $(CFLAGS) -o $(NAME_SERV) $(SRCS_SERV) $(LIBFT) $(PRINTF)
 
 $(NAME_CLIENT):	$(LIBFT) $(OBJS_CLIENT)
 					gcc $(CFLAGS) -o $(NAME_CLIENT) $(SRCS_CLIENT) $(LIBFT)
@@ -46,14 +52,21 @@ $(LIBFT):
 				@$(LIBFT_MAKE)
 				@$(LIBFT_CLEAN)
 				@echo "libft.a compiled"
+$(PRINTF):	
+				@echo "compiling libftprintf.a"
+				@$(PRINTF_MAKE)
+				@$(PRINTF_CLEAN)
+				@echo "libftprintf.a compiled"
 
 clean:
 				rm -f $(OBJS_CLIENT) $(OBJS_SERV)
 				@$(LIBFT_CLEAN)
+				@$(PRINTF_CLEAN)
 
 fclean: 	clean
 				rm -f $(NAME_SERV) $(NAME_CLIENT) 
 				@$(LIBFT_FCLEAN)
+				@$(PRINTF_FCLEAN)
 				
 re:			fclean all
 

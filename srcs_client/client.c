@@ -6,7 +6,7 @@
 /*   By: gachalif <gachalif@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 15:01:34 by gachalif          #+#    #+#             */
-/*   Updated: 2024/02/19 17:54:03 by gachalif         ###   ########.fr       */
+/*   Updated: 2024/02/27 08:52:10 by gachalif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,24 +15,32 @@
 int		ft_atoi(char *s);
 char	*ft_strdup(char *s);
 
+int	send_char(int pid, char c)
+{
+	char	iter;
+
+	iter = 0;
+	while (iter < 8)
+	{
+		if ((c & 0x01) == 0)
+			kill(pid, SIGUSR2);
+		else
+			kill(pid, SIGUSR1);
+		c = c >> 1;
+		usleep(50);
+		iter++;
+	}
+	return (1);
+}
+
 int	send_string(int pid, char *s)
 {
-	int	i;
-
 	while (s && *s)
 	{
-		i = 0;
-		while (i < (int) *s)
-		{
-			kill(pid, SIGUSR1);
-			usleep(50);
-			i++;
-		}
-		kill(pid, SIGUSR2);
-		usleep(50);
+		send_char(pid, *s);
 		s++;
 	}
-	kill(pid, SIGUSR2);
+	send_char(pid, 0);
 	return (1);
 }
 
