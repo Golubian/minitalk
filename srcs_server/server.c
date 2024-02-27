@@ -6,7 +6,7 @@
 /*   By: gachalif <gachalif@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 14:51:59 by gachalif          #+#    #+#             */
-/*   Updated: 2024/02/27 11:00:33 by gachalif         ###   ########.fr       */
+/*   Updated: 2024/02/27 12:04:09 by gachalif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,26 @@
 
 static int	g_kill;
 
-unsigned char	*ft_putstr_free(unsigned char *s, siginfo_t *info)
+static unsigned char	*ft_putstr_free(unsigned char *s, siginfo_t *info)
 {
 	size_t	i;
 
 	i = 0;
-	ft_printf("[%s@%i%s] ", "\033[1;36m", info->si_pid, "\033[0;0m");
+	kill(info->si_pid, SIGUSR1);
+	ft_printf("[%s@%i%s] \"", "\033[1;36m", info->si_pid, "\033[0;0m");
 	while (s && s[i])
 	{
 		write(1, (char *) s + i, 1);
 		s[i] = 0;
 		i++;
 	}
-	write(1, "\n", 1);
+	write(1, "\"\n", 2);
 	if (s)
 		free(s);
 	return (NULL);
 }
 
-unsigned char	*ft_strjoin_free(unsigned char *str, unsigned char c)
+static unsigned char	*ft_strjoin_free(unsigned char *str, unsigned char c)
 {
 	unsigned char	*new;
 	size_t			size;
@@ -59,27 +60,30 @@ unsigned char	*ft_strjoin_free(unsigned char *str, unsigned char c)
 	return (new);
 }
 
-void	handle_sig(int sig, siginfo_t *info, void *ucontext)
+static void	handle_c(int sig, unsigned char *count, unsigned char *c)
+{
+	if (!*c)
+		*c = 0;
+	if (sig == SIGUSR1)
+	{
+		*c ^= 1 << *count;
+		*count = (*count) + 1;
+	}
+	else if (sig == SIGUSR2)
+	{
+		*c ^= 0 << *count;
+		*count = (*count) + 1;
+	}
+}
+
+static void	handle_sig(int sig, siginfo_t *info, void *ucontext)
 {
 	static unsigned char	count;
 	static unsigned char	c;
 	static unsigned char	*str;
-	pid_t					server_id;
 
 	(void) ucontext;
-	if (!c)
-		c = 0;
-	server_id = getpid();
-	if (sig == SIGUSR1)
-	{
-		c ^= 1 << count;
-		count++;
-	}
-	else if (sig == SIGUSR2)
-	{
-		c ^= 0 << count;
-		count++;
-	}
+	handle_c(sig, &count, &c);
 	if (count == 8)
 	{
 		str = ft_strjoin_free(str, c);
@@ -91,7 +95,7 @@ void	handle_sig(int sig, siginfo_t *info, void *ucontext)
 	if (sig == 2)
 	{
 		g_kill = 1;
-		printf("\n[\033[1;31m%i\033[0;0m] Server Closed\n", server_id);
+		printf("\n[\033[1;31m@%i\033[0;0m] Server Closed\n", getpid());
 		return ;
 	}
 }
@@ -113,7 +117,7 @@ int	main(void)
 	sigaction(SIGUSR2, &sa, NULL) == -1 || sigaction(SIGINT, &sa, NULL) == -1)
 		return (1);
 	server_id = getpid();
-	printf("[\033[1;32m%i\033[0;0m] Server Started\n", server_id);
+	printf("[\033[1;32m@%i\033[0;0m] Server Started\n", server_id);
 	while (!g_kill)
 		pause();
 }
