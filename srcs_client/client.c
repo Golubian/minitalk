@@ -6,7 +6,7 @@
 /*   By: gachalif <gachalif@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/19 15:01:34 by gachalif          #+#    #+#             */
-/*   Updated: 2024/02/27 11:58:00 by gachalif         ###   ########.fr       */
+/*   Updated: 2024/02/29 13:29:08 by gachalif         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,17 +65,17 @@ static int	send_string(int pid, char *s)
 static int	validate_pid(char *pid)
 {
 	if (!pid || !*pid)
-		return (printf("%s", "\033[0;31mEmpty pid is invalid\
+		return (printf("%s", "\033[1;31mEmpty pid is invalid\
 		\n\nUsage: ./client <pid> <message>\n"), 0);
 	if (*pid == '0')
-		return (printf("%s", "\033[0;31mPid of 0 is dangerous!\
+		return (printf("%s", "\033[1;31mPid of 0 is dangerous!\
 			\n\nUsage: ./client <pid> <message>\n"), 0);
 	if (*pid == '-')
 	{
 		pid++;
 		if (pid[0] == '1' && pid[1] == 0)
 		{
-			return (printf("\033[0;31mPid of -1 is dangerous!\
+			return (printf("\033[1;31mPid of -1 is dangerous!\
 			\n\nUsage: ./client <pid> <message>\n"), 0);
 		}
 	}
@@ -84,7 +84,7 @@ static int	validate_pid(char *pid)
 		if (*pid >= '0' && *pid <= '9')
 			pid++;
 		else
-			return (printf("\033[0;31mPid should be numerical only\
+			return (printf("\033[1;31mPid should be numerical only\
 		\n\nUsage: ./client <pid> <message>\n"), 0);
 	}
 	return (1);
@@ -97,15 +97,15 @@ int	main(int argc, char **argv)
 	g_received = 0;
 	signal(SIGUSR1, await_response);
 	if (argc < 3)
-		return (printf("%s", "\033[0;31mArgument count invalid\
+		return (printf("%s", "\033[1;31mArgument count invalid\
 		\n\nUsage: ./client <pid> <message>\n"), 1);
 	if (!validate_pid(argv[1]))
 		return (1);
 	pid = ft_atoi(argv[1]);
 	if (pid < 0)
-		printf("%s", "\033[0;33mWARNING: You sent a negative pid\033[0m\n");
+		printf("%s", "\033[1;33mWARNING: You sent a negative pid\033[0m\n");
 	if (!send_string(pid, argv[2]))
-		printf("\033[0;31m\"%s\" - / SIGNAL FAILED TO SEND \
+		printf("\033[1;31m\"%s\" - / SIGNAL FAILED TO SEND \
 / - [%i]\n", argv[2], pid);
 	else
 	{
