@@ -6,7 +6,7 @@
 #    By: gachalif <gachalif@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/02/13 12:46:16 by gachalif          #+#    #+#              #
-#    Updated: 2024/02/27 10:48:28 by gachalif         ###   ########.fr        #
+#    Updated: 2024/02/29 11:06:12 by gachalif         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,36 +38,78 @@ PRINTF_MAKE = make -C ft_printf -s
 PRINTF_CLEAN = make clean -C ft_printf -s
 PRINTF_FCLEAN = make fclean -C ft_printf -s
 
+UP		= "\033[1F"
+CLR		= "\033[2K"
+YELLOW	= "\033[33;1m"
+CYAN	= "\033[36;1m"
+GREEN	= "\033[32;1m"
+DEFAULT	= "\033[0;0m"
+
+define HEADER
+███╗   ███╗██╗███╗   ██╗██╗████████╗ █████╗ ██╗     ██╗  ██╗
+████╗ ████║██║████╗  ██║██║╚══██╔══╝██╔══██╗██║     ██║ ██╔╝
+██╔████╔██║██║██╔██╗ ██║██║   ██║   ███████║██║     █████╔╝ 
+██║╚██╔╝██║██║██║╚██╗██║██║   ██║   ██╔══██║██║     ██╔═██╗ 
+██║ ╚═╝ ██║██║██║ ╚████║██║   ██║   ██║  ██║███████╗██║  ██╗
+╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝
+\033[36;1mFeb. 2024				  gachalif @42Quebec\033[32;1m
+\033[0;1m
+Start SERVER 
+	./server
+
+Send message with CLIENT 
+	./client <SERVER_PID> <MESSAGE>\033[0;0m
+endef
+export HEADER
 
 all:		$(NAME_SERV) $(NAME_CLIENT)
+			@	echo $(GREEN)
+			@	echo "$$HEADER"
+			@	echo $(DEFAULT)
+
+%.o:	%.c
+		@ echo $(UP)$(CLR)🔥 $(YELLOW)$@ 
+		@ $(CC) $(CFLAGS) $(INCLUDES) -o $@ -c $<
 
 $(NAME_SERV): 	$(LIBFT) $(PRINTF) $(OBJS_SERV)
-					gcc $(CFLAGS) -o $(NAME_SERV) $(SRCS_SERV) $(LIBFT) $(PRINTF)
-
+				@ echo $(UP)$(CLR)🔥 $@ 
+				@$(CC) $(CFLAGS) -o $(NAME_SERV) $(SRCS_SERV) $(LIBFT) $(PRINTF)
+				@echo $(UP)$(CLR)🖥 $(GREEN) Compiled SERVER 🖥$(DEFAULT)
+				@echo	
 $(NAME_CLIENT):	$(LIBFT) $(OBJS_CLIENT)
-					gcc $(CFLAGS) -o $(NAME_CLIENT) $(SRCS_CLIENT) $(LIBFT)
+				@ echo $(UP)$(CLR)🔥 $@ 
+				@$(CC) $(CFLAGS) -o $(NAME_CLIENT) $(SRCS_CLIENT) $(LIBFT)
+				@echo $(UP)$(CLR)👤$(GREEN) Compiled CLIENT 👤$(DEFAULT)
 
 $(LIBFT):	
-				@echo "compiling libft.a"
+				@echo 📖 $(YELLOW)Compiling LIBFT 📖 $(DEFAULT)
 				@$(LIBFT_MAKE)
 				@$(LIBFT_CLEAN)
-				@echo "libft.a compiled"
+				@echo $(UP)$(CLR)📖  $(GREEN)Compiled LIBFT 📖 $(DEFAULT)
 $(PRINTF):	
-				@echo "compiling libftprintf.a"
+				@echo 📖  $(YELLOW)Compiling PRINTF 📖 $(DEFAULT)
 				@$(PRINTF_MAKE)
 				@$(PRINTF_CLEAN)
-				@echo "libftprintf.a compiled"
+				@echo $(UP)$(CLR)📖  $(GREEN)Compiled PRINTF 📖 $(DEFAULT)
+				@echo	
 
 clean:
-				rm -f $(OBJS_CLIENT) $(OBJS_SERV)
+				@rm -f $(OBJS_CLIENT) $(OBJS_SERV)
+				@echo 🧽 $(GREEN)All clean!$(DEFAULT)
 				@$(LIBFT_CLEAN)
 				@$(PRINTF_CLEAN)
 
-fclean: 	clean
-				rm -f $(NAME_SERV) $(NAME_CLIENT) 
+fclean: 	
+				@rm -f $(OBJS_CLIENT) $(OBJS_SERV)
+				@rm -f $(NAME_SERV) $(NAME_CLIENT) 
+				@echo 🧽 $(GREEN)All f...clean!$(DEFAULT)
 				@$(LIBFT_FCLEAN)
 				@$(PRINTF_FCLEAN)
 				
-re:			fclean all
+re:		
+		@	rm -f  $(OBJS_CLIENT) $(OBJS_SERV) $(NAME_SERV) $(NAME_CLIENT) 
+		@	$(LIBFT_FCLEAN)
+		@	$(PRINTF_FCLEAN)
+		@	make all
 
-.PHONY = all bonus clean fclean re
+.PHONY = all clean fclean re
